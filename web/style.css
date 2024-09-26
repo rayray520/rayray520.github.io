@@ -1,0 +1,42 @@
+html,body {
+    margin: 0;
+    padding: 0;
+}
+
+#wrapper{
+width:800px;
+margin: 0 auto;
+}
+
+#banner {
+    width: 800px;
+    height: 100px;
+    background-color: skyblue;
+    clear:both;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+#nav {
+    width: 100px;
+    height: 200px;
+    background-color: darkviolet;
+}
+#content {
+    width: 600px;
+    height: 400px;
+    background-color: greenyellow;
+    float:left;
+}
+#supporting {
+    width: 100px;
+    height: 150px;
+    background-color: lemonchiffon;
+    float:left;
+}
+#footer {
+    width: 800px;
+    height: 50px;
+    background-color: aquamarine;
+    clear:both;
+}
