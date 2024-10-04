@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>區段顏色全屏Cover Banner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            scroll-behavior: smooth; /* 平滑滾動 */
+        }
+        /* 頂部Banner */
+        .top-banner {
+            background-color: #fff3cd; /* 淡黃色 */
+            height: 120px; /* Banner 高度 */
+            display: flex; /* 使用 flex 布局 */
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+            font-size: 2rem;
+            position: relative;
+            z-index: 1000; /* 確保在其他內容上方 */
+        }
+        /* 導航欄 */
+        nav {
+            position: sticky;
+            top: 0;
+            background-color: #333;
+            padding: 10px;
+            text-align: left; /* 將導航項目靠左對齊 */
+            z-index: 1000;
+        }
+        nav a {
+            color: white;
+            margin: 0 20px;
+            text-decoration: none;
+            font-size: 1.2rem; /* 頁面導航的字體大小 */
+        }
+        nav a.section-link {
+            font-size: 1rem; /* 區段字體縮小 */
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        /* 區段Banner */
+        .section-banner {
+            width: 100%;
+            height: 100vh; /* 使Banner高度為100vh */
+            display: flex; /* 讓Banner內部元素可對齊 */
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 2rem;
+            position: relative; /* 改為相對定位 */
+            top: 0; /* 置頂 */
+            z-index: 5; /* 确保在内容下方 */
+        }
+        /* 區段Banner顏色 */
+        #section1 .section-banner {
+            background-color: pink;
+        }
+        #section2 .section-banner {
+            background-color: lightblue;
+        }
+        #section3 .section-banner {
+            background-color: lightgreen;
+        }
+        /* 區段內容 */
+        section {
+            position: relative;
+            z-index: 1; /* 確保內容在Banner之下 */
+        }
+        /* 內容區域 */
+        .section-content {
+            padding: 20px; /* 縮小內容的內邊距 */
+            background-color: white; /* 內容區域的背景顏色 */
+            border-radius: 10px; /* 圓角 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 陰影效果 */
+            position: relative;
+            z-index: 10; /* 確保內容在Banner之上 */
+            margin-top: 20px; /* 為Banner留空間 */
+            height: 500px; /* 增加内容区的高度 */
+            max-width: 800px; /* 限制內容區域的最大寬度 */
+            margin-left: auto; /* 居中 */
+            margin-right: auto; /* 居中 */
+        }
+        /* 空白區域 */
+        .home-content {
+            height: 20px; /* 留一小小空白 */
+        }
+        /* 頁腳 */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 50px;
+            text-align: center;
+        }
+    </style>
+    <script>
+        // 點擊導航，滾動到指定區段，滾動時間0.8秒
+        function scrollToSection(sectionId) {
+            if (sectionId === 'home') {
+                // 滾動到首頁
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                const section = document.getElementById(sectionId);
+                const scrollTo = section.offsetTop; // 取得区段的顶部位置
+                
+                // 滚动到指定位置，使用0.8秒时间
+                window.scrollTo({ top: scrollTo, behavior: 'smooth' });
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <!-- 頂部Banner -->
+    <div class="top-banner">
+        歡迎來到我的網站
+    </div>
+
+    <!-- 導航欄 -->
+    <nav>
+        <a href="javascript:void(0)" onclick="scrollToSection('home')">首頁</a>
+        <a href="javascript:void(0)" onclick="scrollToSection('section1')" class="section-link">區段 1</a>
+        <a href="javascript:void(0)" onclick="scrollToSection('section2')" class="section-link">區段 2</a>
+        <a href="javascript:void(0)" onclick="scrollToSection('section3')" class="section-link">區段 3</a>
+    </nav>
+
+    <!-- 首頁 -->
+    <section id="home">
+        <div class="home-content"></div> <!-- 留一小小空白 -->
+    </section>
+
+    <!-- 區段 1 -->
+    <section id="section1">
+        <div class="section-banner">區段 1 Banner</div>
+        <div class="section-content">
+            <p>這是區段 1 的內容。這裡可以添加任何你想要的內容。</p>
+        </div>
+    </section>
+
+    <!-- 區段 2 -->
+    <section id="section2">
+        <div class="section-banner">區段 2 Banner</div>
+        <div class="section-content">
+            <p>這是區段 2 的內容。這裡可以添加任何你想要的內容。</p>
+        </div>
+    </section>
+
+    <!-- 區段 3 -->
+    <section id="section3">
+        <div class="section-banner">區段 3 Banner</div>
+        <div class="section-content">
+            <p>這是區段 3 的內容。這裡可以添加任何你想要的內容。</p>
+        </div>
+    </section>
+
+    <!-- 頁腳 -->
+    <footer>
+        <p>版權所有 &copy; 2024</p>
+    </footer>
+
+</body>
+</html>
