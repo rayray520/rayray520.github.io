@@ -1,0 +1,34 @@
+/* 影片1 */
+#video {
+    position: fixed; /* 固定定位 */
+    width: 100%; /* 使影片寬度填滿螢幕 */
+    height: 100%; /* 使影片高度填滿螢幕 */
+    object-fit: cover; /* 保持影片比例，並裁剪影片來填滿螢幕 */
+    z-index: -1; /* 確保影片在背景 */
+    top: 0; /* 影片從螢幕頂端開始 */
+}
+
+/* 影片2 */
+#video2 {
+    position: absolute; /* 固定定位 */
+    width: 100%; /* 使影片寬度填滿螢幕 */
+    height: 100%; /* 使影片高度填滿螢幕 */
+    object-fit: cover; /* 保持影片比例，並裁剪影片來填滿螢幕 */
+    z-index: -1; /* 確保影片在背景 */
+    top: 100vh; /* 使第二部影片出現在螢幕下方，等第一部影片滾動結束後才顯示 */
+}
+
+/* 其他容器 */
+.container-fluid {
+    min-height: 100vh; /* 保證容器高度至少為視窗的高度 */
+    position: relative;
+}
+/* 標題 */
+h1 {
+    position: relative;
+    top: 50vh; /* 垂直居中 */
+    left: 20vw; /* 水平偏移 */
+    background-color: white;
+    padding: 10px; /* 增加內邊距，讓文字不會貼近邊框 */
+    border-radius: 5px; /* 加圓角 */
+}
