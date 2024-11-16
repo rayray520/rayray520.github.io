@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>互動時間軸與翻翻卡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding-top: 60px; /* 為固定banner留出空間 */
+        }
+ /* Banner樣式 */
+        .video-banner {
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-container {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .banner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+
+        .banner-text {
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .banner-text h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s forwards;
+        }
+
+        .banner-text p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s 0.3s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .navigation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        /* Banner樣式 */
+        .banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: #1a1a1a;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .banner-logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .banner-nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .banner-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .banner-nav a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Footer樣式 */
+        .footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+
+        .footer-section p {
+            line-height: 1.6;
+            color: #aaa;
+        }
+
+        .footer-bottom {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #666;
+        }
+
+        /* 原有的時間軸樣式 */
+        .timeline-container {
+            position: relative;
+            min-height: 300vh;
+            padding: 100px 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #2196F3;
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            width: 50%;
+            padding: 20px;
+            margin: 100px 0;
+            opacity: 0;
+            transform: translateX(-100%);
+            transition: all 0.6s ease;
+        }
+
+        .timeline-item:nth-child(even) {
+            margin-left: 50%;
+            transform: translateX(100%);
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            right: -7px;
+            top: 50%;
+            width: 14px;
+            height: 14px;
+            background: #2196F3;
+            border-radius: 50%;
+            transform: translateY(-50%);
+        }
+
+        .timeline-item:nth-child(even)::before {
+            left: -7px;
+            right: auto;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* 翻翻卡樣式 */
+        .cards-container {
+            height: 400vh;
+            position: relative;
+        }
+
+        .cards-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            position: sticky;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .card {
+            width: 200px;
+            height: 300px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .card-front {
+            background: #25853e;
+            color: white;
+        }
+
+        .card-back {
+            background: #2196F3;
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .prompt {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .prompt.visible {
+            opacity: 1;
+        }
+
+        #thinkingPrompt {
+            top: 150vh;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Banner -->
+    <div class="banner">
+        <div class="banner-logo">科技時代</div>
+        <nav class="banner-nav">
+            <a href="#timeline">時間軸</a>
+            <a href="#cards">知識卡片</a>
+            <a href="#contact">聯絡我們</a>
+        </nav>
+    </div>
+    <div class="video-banner" id="video-banner">
+        <div class="video-container">
+            <video autoplay muted loop playsinline>
+                <source src="https://web.cw.com.tw/climate-2020/deforestation/cover.mp4 "type="video/mp4">
+                <!-- 注意：這裡使用了placeholder，實際使用時請替換為真實視頻路徑 -->
+            </video>
+            <div class="banner-overlay">
+                <div class="banner-text">
+                    <h1>探索科技的未來</h1>
+                    <p>跟隨我們的腳步，一起見證科技發展的每個重要時刻</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 時間軸區域 -->
+    <div class="timeline-container" id="timeline">
+        <div class="timeline-line"></div>
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h3>2020年1月</h3>
+                <p>人工智能在醫療領域取得重大突破，成功預測多種疾病的早期症狀。</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h3>2020年4月</h3>
+                <p>全球首個量子計算機網絡成功建立，為未來量子互聯網奠定基礎。</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h3>2020年7月</h3>
+                <p>自動駕駛技術在城市道路測試中達到99.9%的安全率。</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h3>2020年10月</h3>
+                <p>可再生能源發電量首次超過化石燃料，標誌著能源革命的重要里程碑。</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h3>2021年1月</h3>
+                <p>首個商業化的腦機接口設備獲得批准，開啟人機交互新紀元。</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h3>2021年4月</h3>
+                <p>突破性的基因編輯技術成功治癒遺傳性疾病。</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h3>2021年7月</h3>
+                <p>第一座商業化核聚變反應堆開始運行，解決能源危機。</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h3>2021年10月</h3>
+                <p>全球首個太空旅遊站成功部署，開啟太空旅遊新時代。</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h3>2022年1月</h3>
+                <p>新型可降解塑料技術投入商業使用，有效解決塑料污染問題。</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-content">
+                <h3>2022年4月</h3>
+                <p>全球首個數字貨幣系統正式運行，革新金融體系。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 翻翻卡區域 -->
+    <div class="cards-container" id="cards">
+        <h2 style="text-align: center; padding: 20px;">測試你的科技知識</h2>
+        <div class="cards-wrapper">
+            <div class="card">
+                <div class="card-front">問題 1: 什麼是量子計算？</div>
+                <div class="card-back">量子計算利用量子疊加態進行並行運算，可以解決傳統計算機難以處理的複雜問題。</div>
+            </div>
+            <div class="card">
+                <div class="card-front">問題 2: 什麼是人工智能？</div>
+                <div class="card-back">人工智能是模擬人類智能的計算機系統，能夠學習、推理和自主決策。</div>
+            </div>
+            <div class="card">
+                <div class="card-front">問題 3: 什麼是區塊鏈？</div>
+                <div class="card-back">區塊鏈是一種分散式帳本技術，通過密碼學確保數據的安全性和不可篡改性。</div>
+            </div>
+        </div>
+        <div id="thinkingPrompt" class="prompt">你想清楚答案了嗎？</div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>關於我們</h3>
+                <p>我們致力於追蹤和分享最新的科技發展，為您帶來最前沿的科技資訊。</p>
+            </div>
+            <div class="footer-section">
+                <h3>聯絡方式</h3>
+                <p>Email: info@techera.com<br>
+                   電話: (02) 2345-6789<br>
+                   地址: 台北市科技路88號</p>
+            </div>
+            <div class="footer-section">
+                <h3>追蹤我們</h3>
+                <p>Facebook | Twitter | Instagram<br>
+                   訂閱我們的新聞快報獲取最新資訊</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 科技時代. 版權所有.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 監控時間軸項目的可見性
+        function checkTimelineVisibility() {
+            const items = document.querySelectorAll('.timeline-item');
+            items.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.8) {
+                    item.classList.add('visible');
+                }
+            });
+        }
+
+        // 監控翻翻卡的狀態
+        function checkCardsState() {
+            const container = document.querySelector('.cards-container');
+            const cards = document.querySelectorAll('.card');
+            const thinkingPrompt = document.getElementById('thinkingPrompt');
+            const containerRect = container.getBoundingClientRect();
+            const scrollProgress = -containerRect.top;
+
+            // 顯示思考提示
+            if (scrollProgress > container.offsetHeight * 0.15) {
+                thinkingPrompt.classList.add('visible');
+            } else {
+                thinkingPrompt.classList.remove('visible');
+            }
+
+            // 翻轉卡片
+            if (scrollProgress > container.offsetHeight * 0.25) {
+                cards.forEach(card => {
+                    card.classList.add('flipped');
+                });
+            } else {
+                cards.forEach(card => {
+                    card.classList.remove('flipped');
+                });
+            }
+        }
+
+        // 平滑滾動功能
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // 監聽滾動事件
+        window.addEventListener('scroll', () => {
+            checkTimelineVisibility();
+            checkCardsState();
+        });
+
+        // 初始檢查
+        checkTimelineVisibility();
+        checkCardsState();
+    </script>
+</body>
+</html>
